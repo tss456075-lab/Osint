@@ -1,0 +1,14 @@
+{
+  "name": "malachi-dossier",
+  "version": "1.0.0",
+  "description": "Interactive OSINT dossier for Malachi Keane (Wakibrine) — static HTML/JS/CSS",
+  "main": "index.html",
+  "scripts": {
+    "start": "echo \"This is a static HTML project. Open index.html in the browser.\"",
+    "build": "echo \"Nothing to build. Just copy index.html and assets.\""
+  },
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {}
+}
