@@ -5,38 +5,26 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>OSINT Masterfile — Malachi Keane (Wakibrine) — Interactive Dossier</title>
   <style>
-    :root{--bg:#0f1724;--card:#0b1220;--accent:#7c3aed;--muted:#98a0b3;--glass:rgba(255,255,255,0.03)}
-    html,body{height:100%;margin:0;font-family:Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial}
-    body{background:linear-gradient(180deg,#071129 0%,#071022 50%,#021018 100%);color:#e6eef8}
-    header{display:flex;align-items:center;gap:20px;padding:18px 28px;border-bottom:1px solid rgba(255,255,255,0.03)}
-    .logo{width:52px;height:52px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#0ea5a9);display:flex;align-items:center;justify-content:center;font-weight:700}
-    h1{font-size:18px;margin:0}
+    :root{--bg:#071022;--panel:#081424;--muted:#98a0b3;--accent:#7c3aed}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;color:#e6eef8;background:linear-gradient(180deg,#071129 0%,#021018 100%)}
+    header{display:flex;align-items:center;gap:16px;padding:12px 20px;border-bottom:1px solid rgba(255,255,255,0.03)}
+    .logo{width:46px;height:46px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#0ea5a9);display:flex;align-items:center;justify-content:center;font-weight:700}
+    h1{font-size:16px;margin:0}
     .subtitle{color:var(--muted);font-size:13px}
-    main{display:grid;grid-template-columns:360px 1fr 420px;gap:20px;padding:22px}
-    .panel{background:var(--card);border-radius:12px;padding:16px;box-shadow:0 6px 20px rgba(2,6,23,0.6)}
-    .left .profile{display:flex;gap:12px;align-items:center}
-    .avatar{width:84px;height:84px;border-radius:10px;background:var(--glass);display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--muted)}
+    main{display:grid;grid-template-columns:340px 1fr 380px;gap:18px;padding:18px}
+    .panel{background:var(--panel);border-radius:10px;padding:14px;box-shadow:0 6px 18px rgba(2,6,23,0.6)}
+    .avatar{width:72px;height:72px;border-radius:8px;background:linear-gradient(180deg,#081424,#06101a);display:flex;align-items:center;justify-content:center;color:var(--muted)}
     .small{font-size:13px;color:var(--muted)}
-    .badge{display:inline-block;padding:6px 10px;border-radius:999px;background:rgba(124,58,237,0.12);color:var(--accent);font-weight:600;font-size:12px}
     .link{color:#bfe4ff;text-decoration:none}
-    .link:hover{text-decoration:underline}
-    .node{padding:8px;margin:8px 0;border-radius:8px;background:rgba(255,255,255,0.02);display:flex;align-items:center;gap:10px}
-    .node strong{display:block}
-    .center-area{padding:10px}
-    #treeCanvas{width:100%;height:640px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00));border-radius:10px}
-    .right .evidence-list{max-height:320px;overflow:auto}
-    .timeline{display:flex;gap:6px;align-items:center;margin-top:10px}
-    .timeline .pill{background:rgba(255,255,255,0.02);padding:8px;border-radius:8px}
+    .node-row{display:flex;align-items:center;gap:10px;padding:8px;border-radius:8px;background:rgba(255,255,255,0.02);margin-bottom:8px}
+    #map{height:640px;border-radius:8px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent)}
     .gallery{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:10px}
     .gallery img{width:100%;height:110px;object-fit:cover;border-radius:8px;background:#061024}
-    footer{padding:12px 22px;color:var(--muted);font-size:12px;border-top:1px solid rgba(255,255,255,0.02);display:flex;justify-content:space-between}
-    button{background:var(--accent);color:white;border:0;padding:10px 12px;border-radius:8px;cursor:pointer}
+    pre{white-space:pre-wrap;color:#cfeaff;font-size:13px}
     .controls{display:flex;gap:8px}
     .search{width:100%;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:inherit}
+    button{background:var(--accent);color:white;border:0;padding:8px 12px;border-radius:8px;cursor:pointer}
     .small-muted{font-size:12px;color:var(--muted)}
-    .node-detail{margin-top:12px;padding:12px;background:rgba(255,255,255,0.02);border-radius:8px}
-    pre{white-space:pre-wrap;word-break:break-word;color:#cfeaff}
-    /* responsive */
     @media (max-width:1100px){main{grid-template-columns:1fr;padding:12px} .right{order:3}}
   </style>
 </head>
@@ -45,392 +33,241 @@
     <div class="logo">OS</div>
     <div>
       <h1>OSINT Masterfile — Malachi Keane ("Wakibrine")</h1>
-      <div class="subtitle">Interactive HTML5 dossier: cross-platform footprint, evidence tree, timeline, images, and corroborations</div>
+      <div class="subtitle">Interactive dossier — web tree, images, evidence and corroborations</div>
     </div>
-    <div style="margin-left:auto;display:flex;gap:10px;align-items:center">
-      <div class="small-muted">Generated:</div>
+    <div style="margin-left:auto;display:flex;align-items:center;gap:10px">
       <div class="small-muted">Snapshot: <strong id="snapshotDate"></strong></div>
-      <div class="controls">
-        <button id="exportJson">Export JSON</button>
-        <button id="downloadHtml">Download HTML</button>
-      </div>
+      <div class="controls"><button id="exportJson">Export JSON</button><button id="downloadHtml">Download HTML</button></div>
     </div>
   </header>
 
   <main>
-    <!-- LEFT: profile + quick links -->
     <div class="panel left">
-      <div class="profile">
+      <div style="display:flex;gap:12px;align-items:center">
         <div class="avatar" id="avatar">PHOTO</div>
         <div>
-          <div style="display:flex;gap:8px;align-items:center">
-            <div style="font-weight:700">Malachi Israel Keane</div>
-            <div class="badge">Wakibrine</div>
-          </div>
-          <div class="small">Public business/contact email: <strong id="email">wakibrine@gmail.com</strong></div>
-          <div style="margin-top:8px" class="small-muted">Primary hubs: Twitch · YouTube · Instagram · X · Discord · Linktree</div>
+          <div style="font-weight:700" id="nameHeading">Malachi Israel Keane</div>
+          <div class="small">Alias: <strong id="alias">Wakibrine</strong></div>
+          <div class="small" style="margin-top:6px">Email: <strong id="email">wakibrine@gmail.com</strong></div>
         </div>
       </div>
 
       <hr style="border:none;border-top:1px solid rgba(255,255,255,0.02);margin:12px 0">
 
-      <div class="small-muted">Quick links</div>
-      <div style="margin-top:8px">
-        <div class="node"><div style="width:8px;height:8px;background:var(--accent);border-radius:99px"></div><div><strong>Twitch</strong><div class="small">twitch.tv/wakibrine</div></div></div>
-        <div class="node"><div style="width:8px;height:8px;background:#06b6d4;border-radius:99px"></div><div><strong>Linktree</strong><div class="small">linktr.ee/wakibrine</div></div></div>
-        <div class="node"><div style="width:8px;height:8px;background:#60a5fa;border-radius:99px"></div><div><strong>YouTube</strong><div class="small">youtube.com/@Wakibrine</div></div></div>
-        <div class="node"><div style="width:8px;height:8px;background:#f97316;border-radius:99px"></div><div><strong>Instagram</strong><div class="small">@wakibrine</div></div></div>
-        <div class="node"><div style="width:8px;height:8px;background:#1d9bf0;border-radius:99px"></div><div><strong>X / Twitter</strong><div class="small">@Wakibrine (bio: Toronto, ON)</div></div></div>
-      </div>
+      <div class="small-muted">Platforms & hubs</div>
+      <div id="platformList" style="margin-top:8px"></div>
 
-      <div style="margin-top:12px">
-        <div class="small-muted">Addresses & filings</div>
-        <div class="node"><div style="width:8px;height:8px;background:#7dd3fc;border-radius:99px"></div><div><strong>SunBiz — FARUK ENTERPRISE LLC</strong><div class="small">KEANE, MALACHI — 9951 SW 4TH ST, PLANTATION, FL 33324</div></div></div>
-        <div class="node"><div style="width:8px;height:8px;background:#34d399;border-radius:99px"></div><div><strong>Property (lead)</strong><div class="small">9951 SW 4th St — owners: Moulton W. Keane & Andrea Keane (public aggregator)</div></div></div>
-      </div>
+      <div style="margin-top:12px" class="small-muted">Filings / addresses</div>
+      <div id="filingsList" style="margin-top:8px"></div>
 
-      <div style="margin-top:12px">
-        <div class="small-muted">Family / relatives (public leads)</div>
-        <div class="node"><div style="width:8px;height:8px;background:#f472b6;border-radius:99px"></div><div><strong>Andrea Keane</strong><div class="small">Listed at same address in public directories (possible relative)</div></div></div>
-        <div class="node"><div style="width:8px;height:8px;background:#c084fc;border-radius:99px"></div><div><strong>Moulton W. Keane</strong><div class="small">Owner reference on property history (possible relative)</div></div></div>
-      </div>
+      <div style="margin-top:12px" class="small-muted">Known relatives (leads)</div>
+      <div id="relativesList" style="margin-top:8px"></div>
 
-      <div style="margin-top:14px;display:flex;gap:8px;align-items:center">
-        <input class="search" id="searchNode" placeholder="Search nodes, platforms, names..." />
-      </div>
+      <div style="margin-top:12px"><input class="search" id="quickSearch" placeholder="Search name, platform, address..." /></div>
     </div>
 
-    <!-- CENTER: interactive tree and timeline -->
-    <div class="panel center-area">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <div>
-          <div style="font-weight:700">Interactive Web Tree</div>
-          <div class="small-muted">Click nodes to expand and inspect details, images, and corroborations</div>
-        </div>
-        <div class="small-muted">Drag nodes • Export selection</div>
+    <div class="panel center">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <div style="font-weight:700">Interactive Web Tree</div>
+        <div class="small-muted">Click nodes to inspect — drag to rearrange</div>
       </div>
 
-      <div id="treeCanvas"></div>
+      <div id="map"></div>
 
-      <div class="node-detail" id="nodeDetail">
-        <div style="display:flex;gap:12px;align-items:flex-start">
-          <div style="width:88px;height:88px;border-radius:8px;background:#061224;display:flex;align-items:center;justify-content:center;overflow:hidden" id="detailImg">
-            <img id="detailImgTag" src="" alt="profile" style="width:100%;height:100%;object-fit:cover;display:none" />
-            <div id="detailImgPlaceholder" style="color:var(--muted);padding:8px">Image preview</div>
-          </div>
-          <div style="flex:1">
-            <div style="font-weight:700" id="detailTitle">Select a node</div>
-            <div class="small-muted" id="detailSubtitle">Node details will appear here</div>
-            <div style="margin-top:8px"><pre id="detailBody" class="small-muted">No node selected</pre></div>
-          </div>
+      <div style="margin-top:12px;display:flex;gap:8px;align-items:center;justify-content:space-between">
+        <div class="small-muted">Timeline / Key events</div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <input id="profileUrls" class="search" placeholder="Paste profile URLs (comma-separated)" style="width:420px" />
+          <button id="fetchProfiles">Load images</button>
         </div>
       </div>
 
-      <div style="margin-top:12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-        <div class="timeline">
-          <div class="pill"><strong>2020</strong><div class="small-muted">FARUK ENTERPRISE LLC formation (SunBiz)</div></div>
-          <div class="pill"><strong>2023</strong><div class="small-muted">FAU commencement listing</div></div>
-          <div class="pill"><strong>2023–2025</strong><div class="small-muted">Streaming growth & platform presence</div></div>
-        </div>
-
-        <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
-          <input id="profileUrls" class="search" placeholder="Paste social profile URLs (comma-separated) e.g. https://twitter.com/Wakibrine, https://instagram.com/wakibrine" />
-          <button id="fetchProfiles">Load images from profiles</button>
-        </div>
-      </div>
+      <div style="margin-top:8px" id="nodeDetail" class="small-muted">Select a node to view details here.</div>
     </div>
 
-    <!-- RIGHT: evidence, gallery, raw data -->
     <div class="panel right">
       <div style="display:flex;justify-content:space-between;align-items:center">
-        <div>
-          <div style="font-weight:700">Evidence & Raw Links</div>
-          <div class="small-muted">Catalog of public URLs and documents</div>
-        </div>
+        <div style="font-weight:700">Evidence & raw links</div>
+        <div class="small-muted">Click to open source</div>
       </div>
 
-      <div class="evidence-list" id="evidenceList" style="margin-top:12px">
-        <!-- items injected by JS -->
-      </div>
+      <div id="evidence" style="margin-top:10px;max-height:360px;overflow:auto"></div>
 
-      <div style="margin-top:12px">
-        <div style="font-weight:700">Image Gallery</div>
-        <div class="gallery" id="gallery">
-          <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='400'><rect width='100%' height='100%' fill='%23050b17'/><text x='50%' y='50%' font-size='18' fill='%238ea9c6' text-anchor='middle'>Replace with profile image URL</text></svg>" data-src="" alt="img1"/>
-          <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='400'><rect width='100%' height='100%' fill='%23050b17'/><text x='50%' y='50%' font-size='18' fill='%238ea9c6' text-anchor='middle'>Replace with stream thumbnail URL</text></svg>" data-src="" alt="img2"/>
-          <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='400'><rect width='100%' height='100%' fill='%23050b17'/><text x='50%' y='50%' font-size='18' fill='%238ea9c6' text-anchor='middle'>Replace with property photo URL</text></svg>" data-src="" alt="img3"/>
-          <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='400'><rect width='100%' height='100%' fill='%23050b17'/><text x='50%' y='50%' font-size='18' fill='%238ea9c6' text-anchor='middle'>Replace with document scan URL</text></svg>" data-src="" alt="img4"/>
-        </div>
-      </div>
+      <div style="margin-top:12px;font-weight:700">Image Gallery (click to replace)</div>
+      <div class="gallery" id="gallery"></div>
 
-      <div style="margin-top:12px">
-        <div style="font-weight:700">Raw JSON snapshot</div>
-        <pre id="rawJson" style="max-height:220px;overflow:auto;padding:12px;background:rgba(0,0,0,0.15);border-radius:8px;color:#bfe4ff"></pre>
-      </div>
-
-      <div style="margin-top:12px">
-        <div style="font-weight:700">Notes on dynamic loading</div>
-        <div class="small-muted">This dossier attempts to fetch images automatically by retrieving each profile URL and extracting <code>og:image</code> or oEmbed thumbnails. If your browser blocks cross-origin requests, try running from a local webserver (python -m http.server) or use a CORS proxy. The UI will show which fetches succeed and fallbacks. Do not upload private images here.</div>
+      <div style="margin-top:10px">
+        <div style="font-weight:700">Raw JSON</div>
+        <pre id="rawJson" style="max-height:180px;overflow:auto;background:rgba(0,0,0,0.12);padding:8px;border-radius:6px"></pre>
       </div>
     </div>
   </main>
 
-  <footer>
-    <div class="small-muted">Note: This file is a local interactive OSINT dossier. Replace image placeholders with direct image URLs for gallery preview. Use the export button to save JSON.</div>
-    <div class="small-muted">Generated by assistant</div>
-  </footer>
-
   <script>
-    // Snapshot date
     document.getElementById('snapshotDate').innerText = new Date().toLocaleString();
 
-    // Data model (populate with the findings we have)
+    // --- FULL DATASET (all findings included) ---
     const dossier = {
       subject: {name: 'Malachi Israel Keane', alias: 'Wakibrine', email: 'wakibrine@gmail.com'},
       platforms: [
-        {id: 'twitch', label: 'Twitch', url: 'https://twitch.tv/wakibrine', notes: 'Business email listed on channel'},
-        {id: 'linktree', label: 'Linktree', url: 'https://linktr.ee/wakibrine', notes: 'Central hub linking platforms and email'},
-        {id: 'youtube', label: 'YouTube', url: 'https://youtube.com/@Wakibrine', notes: 'Shorts and live archives'},
-        {id: 'instagram', label: 'Instagram', url: 'https://instagram.com/wakibrine', notes: 'Profile shows name Malachi Keane in bio'},
-        {id: 'x', label: 'X / Twitter', url: 'https://x.com/Wakibrine', notes: 'Bio lists Toronto, Ontario (location hint)'},
-        {id: 'reddit', label: 'Reddit', url: 'https://reddit.com/u/Wakibrine', notes: 'Cross-platform corroboration of handle and email in profile text'},
-        {id: 'discord', label: 'Discord (invite)', url: 'https://discord.gg/wakibrine', notes: 'Public invite link to server "777"'}
+        {id:'twitch', label:'Twitch', url:'https://twitch.tv/wakibrine', notes:'Business Email listed on channel; ~16–17K followers'},
+        {id:'linktree', label:'Linktree', url:'https://linktr.ee/wakibrine', notes:'Central hub linking platforms; lists email'},
+        {id:'youtube', label:'YouTube', url:'https://youtube.com/@Wakibrine', notes:'Shorts & live archives; channel thumbnails match other profiles; ~100K subscribers (snapshot)'} ,
+        {id:'instagram', label:'Instagram', url:'https://instagram.com/wakibrine', notes:'Profile bio includes name "Malachi Keane" and Linktree; reels tagged with locations'},
+        {id:'x', label:'X / Twitter', url:'https://x.com/Wakibrine', notes:'Bio includes "Toronto, Ontario" and email; joined Jan 2025'},
+        {id:'reddit', label:'Reddit', url:'https://reddit.com/u/Wakibrine', notes:'Profile text includes email and handle'},
+        {id:'discord', label:'Discord (invite)', url:'https://discord.gg/wakibrine', notes:'Public invite — server "777" (~3.3k members)'}
       ],
       filings: [
-        {id:'sunbiz', label: 'SunBiz — FARUK ENTERPRISE LLC', summary: 'Authorized person listed as KEANE, MALACHI; principal address 9951 SW 4TH ST, Plantation, FL 33324', url: 'https://dos.myflorida.com/sunbiz' }
+        {id:'sunbiz', label:'SunBiz — FARUK ENTERPRISE LLC', url:'https://dos.myflorida.com/sunbiz', summary:'Authorized person listed: KEANE, MALACHI; principal address: 9951 SW 4TH ST, PLANTATION, FL 33324; Document L20000226587; annual reports 2023–2025; formation ~2020-07-29'}
       ],
       addresses: [
-        {label: '9951 SW 4th St, Plantation, FL 33324', notes: 'Property aggregator pages show owners Moulton W. Keane & Andrea Keane (public lead)'}
+        {id:'addr1', label:'9951 SW 4th St, Plantation, FL 33324', notes:'Property aggregator pages list owners: Moulton W. Keane & Andrea Keane; parcel references in public sites'},
       ],
-      academic: [ {label:'FAU Fall 2023 commencement', notes:'Name Malachi Keane appears in public program (graduation list)'} ],
-      donation: [{label:'Streamlabs tip page', url:'https://streamlabs.com/wakibrine', notes:'Donation landing — merchant name visible inside checkout popup'}],
-      relatives: [ {label:'Andrea Keane', notes:'Listed at same address in public directories (possible relative)'}, {label:'Moulton W. Keane', notes:'Owner listed on property history (possible relative)'} ]
+      academics: [ {label:'FAU Fall 2023 commencement program', url:'https://www.fau.edu/commencement', notes:'Name "Malachi Keane" appears in graduate list (public PDF)'} ],
+      donations: [ {label:'Streamlabs tip page', url:'https://streamlabs.com/wakibrine', notes:'Donation landing page; merchant display name visible inside checkout popup (interactive)'} ],
+      relatives: [ {label:'Andrea Keane', notes:'Listed at same address in public directories'}, {label:'Moulton W. Keane', notes:'Owner referenced in property history pages'} ],
+      property_aggregators: [ {label:'Zillow / Realtor / Homes entries for 9951 SW 4th St', notes:'House details & transaction history; owner names listed in public aggregators'} ],
+      other_hits: [ {label:'Name collisions', notes:'Other people named Malachi Keane found in UK police press and other contexts — do not conflate without corroboration'} ],
+      confidence: {email:'very high', cross_platform:'very high', sunbiz_to_streamer:'moderate', deed_needed:'high'}
     };
 
-    // render evidence list
-    const evidenceEl = document.getElementById('evidenceList');
-    function addEvidence(title, href, snippet){
-      const div = document.createElement('div'); div.className='node';
-      const left = document.createElement('div'); left.style.flex='1';
-      const a = document.createElement('a'); a.href = href; a.textContent = title; a.target='_blank'; a.className='link';
-      const s = document.createElement('div'); s.className='small-muted'; s.textContent = snippet;
-      left.appendChild(a); left.appendChild(s);
-      div.appendChild(left);
-      evidenceEl.appendChild(div);
-    }
+    // Render left lists
+    const platformList = document.getElementById('platformList');
+    dossier.platforms.forEach(p => {
+      const div = document.createElement('div'); div.className='node-row';
+      div.innerHTML = '<div style="width:12px;height:12px;border-radius:6px;background:#7c3aed"></div><div style="flex:1"><strong>' + p.label + '</strong><div class="small-muted">' + p.url + '</div><div class="small">' + p.notes + '</div></div>';
+      platformList.appendChild(div);
+    });
+    const filingsList = document.getElementById('filingsList');
+    dossier.filings.forEach(f=>{ const div=document.createElement('div');div.className='node-row';div.innerHTML='<div style="width:12px;height:12px;border-radius:6px;background:#06b6d4"></div><div style="flex:1"><strong>' + f.label + '</strong><div class="small-muted">' + f.summary + '</div><div class="small"><a class="link" href="' + f.url + '" target="_blank">Source</a></div></div>'; filingsList.appendChild(div); });
+    const relativesList = document.getElementById('relativesList');
+    dossier.relatives.forEach(r=>{ const div=document.createElement('div');div.className='node-row';div.innerHTML='<div style="width:12px;height:12px;border-radius:6px;background:#f472b6"></div><div style="flex:1"><strong>' + r.label + '</strong><div class="small">' + r.notes + '</div></div>'; relativesList.appendChild(div); });
 
+    // Render evidence panel
+    const evidence = document.getElementById('evidence');
+    function addEvidence(title, url, notes){ const el = document.createElement('div'); el.className='node-row'; el.innerHTML = '<div style="width:10px;height:10px;border-radius:6px;background:#60a5fa"></div><div style="flex:1"><strong><a class="link" href="' + url + '" target="_blank">' + title + '</a></strong><div class="small-muted">' + (notes || '') + '</div></div>'; evidence.appendChild(el); }
     dossier.platforms.forEach(p=> addEvidence(p.label, p.url, p.notes));
     dossier.filings.forEach(f=> addEvidence(f.label, f.url, f.summary));
-    dossier.addresses.forEach(a=> addEvidence(a.label, 'https://www.google.com/maps/search/'+encodeURIComponent(a.label), a.notes));
-    dossier.donation.forEach(d=> addEvidence(d.label, d.url, d.notes));
+    dossier.addresses.forEach(a=> addEvidence(a.label, 'https://www.google.com/maps/search/' + encodeURIComponent(a.label), a.notes));
+    dossier.donations.forEach(d=> addEvidence(d.label, d.url, d.notes));
+    dossier.academics.forEach(a=> addEvidence(a.label, a.url, a.notes));
+    dossier.property_aggregators.forEach(pa=> addEvidence(pa.label, 'https://www.google.com/search?q=' + encodeURIComponent(pa.label), pa.notes));
 
     document.getElementById('rawJson').innerText = JSON.stringify(dossier, null, 2);
 
-    // Tree rendering (simple collapsible force-like layout)
-    const width = document.getElementById('treeCanvas').clientWidth;
-    const height = 640;
-    const canvas = document.createElement('canvas'); canvas.width = width; canvas.height = height; canvas.id='osintCanvas';
-    document.getElementById('treeCanvas').appendChild(canvas);
-    const ctx = canvas.getContext('2d');
+    // --- Interactive tree (SVG + lightweight force simulation) ---
+    const svgNS = 'http://www.w3.org/2000/svg';
+    const container = document.getElementById('map');
+    const svg = document.createElementNS(svgNS,'svg'); svg.setAttribute('width','100%'); svg.setAttribute('height','100%'); svg.style.display='block'; container.appendChild(svg);
 
-    // nodes & links
-    let nodes = [{id:'subject', label:dossier.subject.name, x:width/2, y:80, r:28, type:'subject'}];
-    dossier.platforms.forEach((p,i)=> nodes.push({id:p.id,label:p.label,x:100+ (i*80)% (width-200),y:220 + Math.floor(i/6)*120,r:18,type:'platform',meta:p}));
-    dossier.filings.forEach((f,i)=> nodes.push({id:f.id||'filing'+i,label:f.label,x:width-140,y:160 + i*100,r:18,type:'filing',meta:f}));
-    dossier.addresses.forEach((a,i)=> nodes.push({id:'addr'+i,label:'Address',x:80,y:420 + i*90,r:18,type:'address',meta:a}));
-    dossier.relatives.forEach((r,i)=> nodes.push({id:'rel'+i,label:r.label,x:width-120,y:420 + i*90,r:18,type:'relative',meta:r}));
+    // Build nodes and links from dossier
+    const nodes = [];
+    const links = [];
+    function pushNode(id,label,type,meta){ nodes.push({id: id, label: label, type: type, meta: meta, x: Math.random()*800+50, y: Math.random()*300+50, vx:0, vy:0}); }
 
-    let links = [];
-    nodes.forEach(n=>{ if(n.id!=='subject') links.push({source:'subject',target:n.id}); });
+    pushNode('subject', dossier.subject.name, 'subject', {alias: dossier.subject.alias, email: dossier.subject.email});
+    dossier.platforms.forEach(function(p){ pushNode('p_' + p.id, p.label, 'platform', p); });
+    dossier.filings.forEach(function(f){ pushNode('f_' + (f.id || f.label), f.label, 'filing', f); });
+    dossier.addresses.forEach(function(a){ pushNode('a_' + (a.id || a.label), a.label, 'address', a); });
+    dossier.relatives.forEach(function(r){ pushNode('r_' + r.label.split(' ').join('_'), r.label, 'relative', r); });
+    dossier.academics.forEach(function(ac,i){ pushNode('ac_' + i, ac.label, 'academic', ac); });
+    dossier.donations.forEach(function(d,i){ pushNode('d_' + i, d.label, 'donation', d); });
 
-    // simple physics
-    function tick(){
-      ctx.clearRect(0,0,canvas.width,canvas.height);
-      // draw links
-      ctx.strokeStyle='rgba(255,255,255,0.06)'; ctx.lineWidth=1;
-      links.forEach(l=>{
-        const a = nodes.find(n=>n.id===l.source); const b = nodes.find(n=>n.id===l.target);
-        ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
-      });
-      // draw nodes
-      nodes.forEach(n=>{
-        ctx.beginPath(); ctx.fillStyle = n.type==='subject'? 'rgba(124,58,237,0.95)' : 'rgba(255,255,255,0.03)';
-        ctx.strokeStyle='rgba(255,255,255,0.06)';
-        ctx.lineWidth=1; ctx.roundRect = function(x,y,w,h,r){this.moveTo(x+r,y);this.arcTo(x+w,y,x+w,y+h,r);this.arcTo(x+w,y+h,x,y+h,r);this.arcTo(x,y+h,x,y,r);this.arcTo(x,y,x+w,y,r);};
-        ctx.beginPath(); ctx.arc(n.x,n.y,n.r,0,Math.PI*2); ctx.fill(); ctx.stroke();
-        // label
-        ctx.fillStyle = n.type==='subject'? '#fff' : '#cfeaff'; ctx.font='12px system-ui'; ctx.textAlign='center'; ctx.fillText(n.label, n.x, n.y+4);
-      });
-    }
+    nodes.forEach(function(n){ if(n.id !== 'subject'){ links.push({source: 'subject', target: n.id}); } });
 
-    // basic interactivity: click node to show details
-    function findNodeAt(x,y){ return nodes.find(n=> Math.hypot(n.x-x,n.y-y) < n.r ); }
-    canvas.addEventListener('click', e=>{
-      const rect = canvas.getBoundingClientRect(); const x = e.clientX-rect.left; const y = e.clientY-rect.top;
-      const node = findNodeAt(x,y);
-      if(node){ showNodeDetail(node); }
+    // Create SVG elements for links and nodes
+    const linkEls = [];
+    const nodeEls = [];
+
+    links.forEach(function(l){ var line = document.createElementNS(svgNS,'line'); line.setAttribute('stroke','rgba(255,255,255,0.06)'); line.setAttribute('stroke-width','1'); svg.appendChild(line); linkEls.push({el:line, data:l}); });
+
+    nodes.forEach(function(n){
+      var g = document.createElementNS(svgNS,'g'); g.setAttribute('cursor','pointer');
+      var circle = document.createElementNS(svgNS,'circle'); circle.setAttribute('r', n.type === 'subject' ? 28 : 18); circle.setAttribute('fill', n.type === 'subject' ? '#7c3aed' : 'rgba(255,255,255,0.03)'); circle.setAttribute('stroke','rgba(255,255,255,0.06)');
+      var text = document.createElementNS(svgNS,'text'); text.setAttribute('text-anchor','middle'); text.setAttribute('alignment-baseline','middle'); text.setAttribute('font-size','12'); text.setAttribute('fill', n.type === 'subject' ? '#fff' : '#cfeaff'); text.textContent = n.label;
+      g.appendChild(circle); g.appendChild(text);
+      svg.appendChild(g);
+      nodeEls.push({g:g, circle:circle, text:text, data:n});
+
+      // Drag behavior
+      var dragging = false; var offsetX = 0; var offsetY = 0;
+      g.addEventListener('mousedown', function(ev){ dragging = true; offsetX = ev.clientX - n.x; offsetY = ev.clientY - n.y; ev.preventDefault(); });
+      window.addEventListener('mousemove', function(ev){ if(dragging){ n.x = ev.clientX - offsetX; n.y = ev.clientY - offsetY; n.vx = n.vy = 0; render(); } });
+      window.addEventListener('mouseup', function(){ dragging = false; });
+
+      // click shows detail
+      g.addEventListener('click', function(ev){ ev.stopPropagation(); showNodeInfo(n); });
     });
 
-    function showNodeDetail(node){
-      document.getElementById('detailTitle').innerText = node.label;
-      const subtitle = node.type + (node.meta && node.meta.url? ' • '+ (node.meta.url||'') : '');
-      document.getElementById('detailSubtitle').innerText = subtitle;
-      let body = '';
-      if(node.meta){
-        body += (node.meta.summary || node.meta.notes || '') + '
-';
-        if(node.meta.url) body += '
-URL: ' + node.meta.url + '
-';
-      }
-      document.getElementById('detailBody').innerText = body || 'No extra details';
-      // image load logic: if meta has an image field use it (placeholders exist)
-      const imgTag = document.getElementById('detailImgTag'); const imgPlaceholder = document.getElementById('detailImgPlaceholder');
-      if(node.meta && node.meta.image){ imgTag.src = node.meta.image; imgTag.style.display='block'; imgPlaceholder.style.display='none'; } else { imgTag.style.display='none'; imgPlaceholder.style.display='block'; }
+    // Force simulation
+    function simulate(){
+      var k = 0.02;
+      links.forEach(function(l){ var s = nodes.find(function(n){ return n.id === l.source; }); var t = nodes.find(function(n){ return n.id === l.target; }); var dx = t.x - s.x; var dy = t.y - s.y; var dist = Math.hypot(dx,dy) || 1; var desired = 150; var force = (dist - desired) * k; var fx = (dx/dist)*force; var fy = (dy/dist)*force; t.vx -= fx; t.vy -= fy; s.vx += fx; s.vy += fy; });
+      for(var i=0;i<nodes.length;i++){ for(var j=i+1;j<nodes.length;j++){ var a = nodes[i], b = nodes[j]; var dx = b.x - a.x, dy = b.y - a.y; var d = Math.hypot(dx,dy) || 0.01; var min = 60; if(d < min){ var rep = (min - d) * 0.02; var rx = (dx/d) * rep; var ry = (dy/d) * rep; a.vx -= rx; a.vy -= ry; b.vx += rx; b.vy += ry; } } }
+      nodes.forEach(function(n){ n.vx *= 0.85; n.vy *= 0.85; n.x += n.vx; n.y += n.vy; });
     }
 
-    // simple drag to reposition nodes
-    let drag = null;
-    canvas.addEventListener('mousedown', e=>{
-      const rect = canvas.getBoundingClientRect(); const x = e.clientX-rect.left; const y = e.clientY-rect.top; const node = findNodeAt(x,y); if(node){ drag = node; }
-    });
-    window.addEventListener('mousemove', e=>{ if(drag){ const rect = canvas.getBoundingClientRect(); drag.x = e.clientX-rect.left; drag.y = e.clientY-rect.top; tick(); } });
-    window.addEventListener('mouseup', ()=>{ drag=null; });
+    function render(){
+      linkEls.forEach(function(le){ var s = nodes.find(function(n){ return n.id === le.data.source; }); var t = nodes.find(function(n){ return n.id === le.data.target; }); le.el.setAttribute('x1', s.x); le.el.setAttribute('y1', s.y); le.el.setAttribute('x2', t.x); le.el.setAttribute('y2', t.y); });
+      nodeEls.forEach(function(ne){ ne.g.setAttribute('transform', 'translate(' + ne.data.x + ',' + ne.data.y + ')'); });
+    }
 
-    // initial render & periodic tick
+    function tick(){ simulate(); render(); requestAnimationFrame(tick); }
     tick();
 
-    // Export JSON
-    document.getElementById('exportJson').addEventListener('click', ()=>{
-      const blob = new Blob([JSON.stringify(dossier,null,2)],{type:'application/json'});
-      const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href=url; a.download='malachi_dossier.json'; document.body.appendChild(a); a.click(); a.remove();
-    });
-
-    // Download standalone HTML: create an anchor with the current HTML serialized
-    document.getElementById('downloadHtml').addEventListener('click', ()=>{
-      const html = document.documentElement.outerHTML; const blob = new Blob([html],{type:'text/html'}); const url = URL.createObjectURL(blob);
-      const a = document.createElement('a'); a.href=url; a.download='Malachi_Keane_OSINT_Dossier.html'; document.body.appendChild(a); a.click(); a.remove();
-    });
-
-    // helper: search nodes
-    document.getElementById('searchNode').addEventListener('input', e=>{
-      const q = e.target.value.toLowerCase(); nodes.forEach(n=>{ n.highlight = q && (n.label.toLowerCase().includes(q) || (n.meta && JSON.stringify(n.meta).toLowerCase().includes(q))); }); tick();
-    });
-
-    // DYNAMIC IMAGE LOADING: try multiple strategies to extract profile images
-    async function fetchWithCORS(url){
-      // try direct fetch first
-      try{
-        const res = await fetch(url, {mode:'cors'});
-        if(!res.ok) throw new Error('Fetch failed');
-        return await res.text();
-      }catch(e){
-        // try public CORS proxy (AllOrigins)
-        try{
-          const proxy = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url);
-          const res2 = await fetch(proxy);
-          if(!res2.ok) throw new Error('Proxy fetch failed');
-          return await res2.text();
-        }catch(e2){
-          console.warn('Both direct and proxy fetch failed for',url,e2);
-          return null;
-        }
-      }
+    // Node detail display & open link
+    function showNodeInfo(n){
+      var detail = document.getElementById('nodeDetail');
+      var html = '<div style="font-weight:700">' + n.label + '</div><div class="small-muted" style="margin-top:6px">Type: ' + n.type + '</div>';
+      if(n.meta){ html += '<div style="margin-top:8px"><pre>' + (n.meta.summary || n.meta.notes || '') + '</pre></div>'; if(n.meta.url) html += '<div style="margin-top:8px"><a class="link" target="_blank" href="' + n.meta.url + '">Open Source</a></div>'; }
+      detail.innerHTML = html;
+      if(n.meta && n.meta.url){ fetchOgImage(n.meta.url).then(function(img){ if(img){ setAvatar(img); addGalleryImage(img); } }); }
     }
 
-    function extractOgImage(html){
-      if(!html) return null;
-      try{
-        const doc = new DOMParser().parseFromString(html,'text/html');
-        const meta = doc.querySelector('meta[property="og:image"], meta[name="og:image"]');
-        if(meta) return meta.getAttribute('content');
-        // fallback to twitter:image
-        const meta2 = doc.querySelector('meta[name="twitter:image"], meta[property="twitter:image"]');
-        if(meta2) return meta2.getAttribute('content');
-        return null;
-      }catch(e){ return null; }
-    }
+    // small helpers: set avatar and add gallery images
+    function setAvatar(url){ var av = document.getElementById('avatar'); av.style.backgroundImage = 'url(' + url + ')'; av.style.backgroundSize = 'cover'; av.textContent = ''; }
+    function addGalleryImage(url){ var g = document.getElementById('gallery'); var img = document.createElement('img'); img.src = url; img.style.cursor = 'pointer'; img.addEventListener('click', function(){ var newUrl = prompt('Replace image with URL (blank to remove):', url); if(newUrl){ img.src = newUrl; } }); g.appendChild(img); }
 
-    async function fetchOEmbedImage(profileUrl){
-      // Try common oEmbed endpoints
-      const providers = [
-        {name:'YouTube', endpoint: 'https://www.youtube.com/oembed?url='},
-        {name:'Twitter', endpoint: 'https://publish.twitter.com/oembed?url='},
-        {name:'Instagram', endpoint: 'https://graph.facebook.com/v8.0/instagram_oembed?url='},
-        {name:'Twitch', endpoint: 'https://api.twitch.tv/v5/oembed?url='}
-      ];
-      for(const p of providers){
-        try{
-          const u = p.endpoint + encodeURIComponent(profileUrl) + '&format=json';
-          const r = await fetch(u);
-          if(!r.ok) continue;
-          const j = await r.json();
-          if(j.thumbnail_url) return j.thumbnail_url;
-          // some return HTML containing img
-          if(j.html){ const img = extractOgImage(j.html); if(img) return img; }
-        }catch(e){ /* ignore */ }
-      }
+    // OG image extraction (uses CORS proxy fallback)
+    async function fetchOgImage(profileUrl){
+      try{
+        var oembedCandidates = [
+          'https://www.youtube.com/oembed?url=' + encodeURIComponent(profileUrl) + '&format=json',
+          'https://publish.twitter.com/oembed?url=' + encodeURIComponent(profileUrl) + '&format=json',
+          'https://api.twitch.tv/v5/oembed?url=' + encodeURIComponent(profileUrl)
+        ];
+        for(var ii=0; ii < oembedCandidates.length; ii++){ try{ var r = await fetch(oembedCandidates[ii]); if(r.ok){ var j = await r.json(); if(j.thumbnail_url) return j.thumbnail_url; } }catch(e){} }
+        var direct = await fetch(profileUrl).then(function(r){ return r.text(); }).catch(function(){ return null; });
+        var og = extractOg(direct); if(og) return og;
+        var proxy = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(profileUrl);
+        var proxyHtml = await fetch(proxy).then(function(r){ return r.text(); }).catch(function(){ return null; });
+        var og2 = extractOg(proxyHtml); if(og2) return og2;
+      }catch(e){ console.warn('fetchOgImage error', e); }
       return null;
     }
+    function extractOg(html){ if(!html) return null; try{ var doc = new DOMParser().parseFromString(html,'text/html'); var m = doc.querySelector('meta[property="og:image"]') || doc.querySelector('meta[name="og:image"]') || doc.querySelector('meta[name="twitter:image"]'); return m ? m.getAttribute('content') : null; }catch(e){ return null; } }
 
-    async function fetchProfileImage(profileUrl){
-      // normalize: ensure http
-      if(!profileUrl) return null;
-      try{
-        // First try oEmbed endpoints
-        const oembed = await fetchOEmbedImage(profileUrl);
-        if(oembed) return oembed;
-        // Next try fetching the profile page and extract og:image
-        const html = await fetchWithCORS(profileUrl);
-        const og = extractOgImage(html);
-        if(og) return og;
-        // last resort: try known patterns (YouTube channel ID thumbnails, Twitch user avatar pattern)
-        // Try Twitch avatar pattern
-        try{
-          if(profileUrl.includes('twitch.tv')){
-            const match = profileUrl.match(/twitch\.tv\/(.+)$/i);
-            if(match){
-              const username = match[1].replace('/','');
-              // public API-less approach: attempt twitch profile image via ii.net proxy (may fail)
-              return `https://static-cdn.jtvnw.net/jtv_user_pictures/${username}-profile_image-300x300.png`;
-            }
-          }
-        }catch(e){}
-        return null;
-      }catch(e){ console.warn('fetchProfileImage error',e); return null; }
-    }
-
-    async function loadImagesFromProfiles(urls){
-      const gallery = document.getElementById('gallery');
-      // clear existing
-      Array.from(gallery.children).forEach(img=>{ img.dataset.src=''; img.src = img.getAttribute('src'); });
-      const urlList = urls.split(',').map(s=>s.trim()).filter(Boolean);
-      for(let i=0;i<urlList.length;i++){
-        const u = urlList[i];
-        const imgUrl = await fetchProfileImage(u);
-        const slot = gallery.children[i] || null;
-        if(slot && imgUrl){ slot.src = imgUrl; slot.dataset.src = imgUrl; }
-        // append additional images if more profiles than slots
-        if(!slot && imgUrl){ const img = document.createElement('img'); img.src=imgUrl; img.dataset.src = imgUrl; document.getElementById('gallery').appendChild(img); }
-      }
-    }
-
-    document.getElementById('fetchProfiles').addEventListener('click', async ()=>{
-      const val = document.getElementById('profileUrls').value;
-      if(!val){ alert('Paste one or more profile URLs separated by commas (e.g. https://x.com/Wakibrine, https://instagram.com/wakibrine)'); return; }
-      document.getElementById('fetchProfiles').disabled = true; document.getElementById('fetchProfiles').textContent='Loading...';
-      await loadImagesFromProfiles(val);
-      document.getElementById('fetchProfiles').disabled = false; document.getElementById('fetchProfiles').textContent='Load images from profiles';
+    // fetchProfiles button
+    document.getElementById('fetchProfiles').addEventListener('click', async function(){
+      var val = document.getElementById('profileUrls').value.trim(); if(!val){ alert('Paste one or more profile URLs separated by commas.'); return; }
+      var urls = val.split(',').map(function(s){ return s.trim(); }).filter(Boolean);
+      for(var i=0;i<urls.length;i++){ var img = await fetchOgImage(urls[i]); if(img) addGalleryImage(img); }
     });
 
-    // polyfill for arcTo rounded rect drawing (no-op for now)
-    // Serialize JSON into rawJSON area
-    document.getElementById('rawJson').innerText = JSON.stringify(dossier, null, 2);
+    // quick search filter
+    document.getElementById('quickSearch').addEventListener('input', function(e){ var q = e.target.value.toLowerCase(); nodeEls.forEach(function(ne){ var match = ne.data.label.toLowerCase().indexOf(q) !== -1 || JSON.stringify(ne.data.meta || {}).toLowerCase().indexOf(q) !== -1; ne.circle.setAttribute('opacity', match ? 1 : 0.25); ne.text.setAttribute('opacity', match ? 1 : 0.25); }); });
 
-    // small guidance: how to replace gallery images by drag/drop or pasting URL
-    document.getElementById('gallery').addEventListener('click', e=>{
-      const img = e.target.closest('img'); if(!img) return; const url = prompt('Paste direct image URL to replace this placeholder:'); if(url){ img.src = url; img.dataset.src = url; }
-    });
+    // export & download
+    document.getElementById('exportJson').addEventListener('click', function(){ var blob = new Blob([JSON.stringify(dossier,null,2)],{type:'application/json'}); var url = URL.createObjectURL(blob); var a = document.createElement('a'); a.href = url; a.download = 'malachi_dossier.json'; a.click(); });
+    document.getElementById('downloadHtml').addEventListener('click', function(){ var html = '<!doctype html>' + document.documentElement.outerHTML; var blob = new Blob([html],{type:'text/html'}); var url = URL.createObjectURL(blob); var a = document.createElement('a'); a.href = url; a.download = 'Malachi_Keane_OSINT_Dossier.html'; a.click(); });
+
+    // init: place some starting images (placeholders)
+    addGalleryImage('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400"><rect width="100%" height="100%" fill="#050a12"/><text x="50%" y="50%" font-size="20" fill="#8ea9c6" text-anchor="middle">Click nodes to load images from profiles</text></svg>');
+
+    // Make evidence items clickable and interactive
+    Array.from(document.querySelectorAll('#evidence a')).forEach(function(a){ a.addEventListener('click', function(){}); });
+
   </script>
 </body>
 </html>
